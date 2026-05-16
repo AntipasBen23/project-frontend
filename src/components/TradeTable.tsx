@@ -32,7 +32,7 @@ export default function TradeTable({ trades }: TradeTableProps) {
         border: "1px dashed #1e3330",
         borderRadius: 12,
       }}>
-        No trades yet — start the bot to begin trading
+        No trades yet. Start the bot to begin trading.
       </div>
     );
   }
