@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {
   BotStatus,
   BrainLog,
@@ -41,6 +41,13 @@ export default function Dashboard() {
   const [stopLoss, setStopLoss] = useState(2.0);
   const [takeProfit, setTakeProfit] = useState(3.0);
   const [maxDailyLoss, setMaxDailyLoss] = useState(5.0);
+
+  useEffect(() => {
+    fetch(`${API}/api/candles?symbol=BTCUSDT&interval=1m&limit=100`)
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setCandles(data); })
+      .catch(() => {});
+  }, []);
 
   const handleMessage = useCallback((event: string, data: unknown) => {
     if (!connected) setConnected(true);

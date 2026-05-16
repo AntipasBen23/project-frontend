@@ -67,8 +67,9 @@ export default function StatsPanel({
 
   useEffect(() => {
     fetchBalance();
+    const retry = setTimeout(fetchBalance, 3000);
     const id = setInterval(fetchBalance, 15000);
-    return () => clearInterval(id);
+    return () => { clearTimeout(retry); clearInterval(id); };
   }, []);
 
   const pnlColor = (pnl?.totalPnl ?? 0) >= 0 ? "#00d4aa" : "#ff4d6d";
