@@ -77,7 +77,7 @@ export default function StatsPanel({
   const eth = balances.find((b) => b.asset === "ETH");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", height: "100%", overflow: "auto" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
       {/* Balance Card */}
       <div className="card">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>

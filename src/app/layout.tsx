@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "TradeBot — Crypto Trading Dashboard",
-  description: "Automated crypto trading bot with live dashboard, backtesting and risk management",
+  title: "AIEdge Swing — Crypto Trading Dashboard",
+  description: "Automated crypto trading with live dashboard, backtesting and risk management",
 };
 
 export default function RootLayout({

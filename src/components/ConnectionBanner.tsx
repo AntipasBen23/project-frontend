@@ -7,25 +7,34 @@ interface ConnectionBannerProps {
 }
 
 export default function ConnectionBanner({ connected }: ConnectionBannerProps) {
-  const [visible, setVisible] = useState(false);
-  const [wasConnected, setWasConnected] = useState(false);
+  const [show, setShow] = useState(false);
+  const [isReconnect, setIsReconnect] = useState(false);
 
   useEffect(() => {
-    if (!connected) {
-      setVisible(true);
-    } else {
-      if (wasConnected === false && connected) {
-        // just reconnected
-        setVisible(true);
-        const t = setTimeout(() => setVisible(false), 3000);
-        return () => clearTimeout(t);
-      }
-      setVisible(false);
-    }
-    setWasConnected(connected);
-  }, [connected, wasConnected]);
+    let timer: ReturnType<typeof setTimeout>;
 
-  if (!visible) return null;
+    if (!connected) {
+      // Only show the banner after 2s of not being connected — avoids flash on initial load
+      timer = setTimeout(() => setShow(true), 2000);
+    } else {
+      if (show) {
+        // Was showing the "connecting" banner → briefly flash "connected"
+        setIsReconnect(true);
+        setShow(true);
+        timer = setTimeout(() => {
+          setShow(false);
+          setIsReconnect(false);
+        }, 2500);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connected]);
+
+  if (!show) return null;
+
+  const isConnected = connected && isReconnect;
 
   return (
     <div
@@ -35,38 +44,36 @@ export default function ConnectionBanner({ connected }: ConnectionBannerProps) {
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 100,
-        padding: "0.5rem 1.25rem",
+        padding: "0.45rem 1rem",
         borderRadius: 8,
-        fontSize: "0.8rem",
+        fontSize: "0.775rem",
         fontWeight: 600,
         display: "flex",
         alignItems: "center",
         gap: "0.5rem",
         animation: "fadeInSlide 0.3s ease-out",
-        ...(connected
+        ...(isConnected
           ? {
-              background: "rgba(0,212,170,0.12)",
-              border: "1px solid rgba(0,212,170,0.3)",
+              background: "rgba(0,212,170,0.1)",
+              border: "1px solid rgba(0,212,170,0.25)",
               color: "#00d4aa",
             }
           : {
-              background: "rgba(255,77,109,0.12)",
-              border: "1px solid rgba(255,77,109,0.3)",
-              color: "#ff4d6d",
+              background: "rgba(255,200,87,0.08)",
+              border: "1px solid rgba(255,200,87,0.2)",
+              color: "#ffc857",
             }),
       }}
     >
-      <span
-        style={{
-          width: 7,
-          height: 7,
-          borderRadius: "50%",
-          background: connected ? "#00d4aa" : "#ff4d6d",
-          display: "inline-block",
-          flexShrink: 0,
-        }}
-      />
-      {connected ? "Backend connected" : "Connecting to backend… (start go run main.go)"}
+      <span style={{
+        width: 6,
+        height: 6,
+        borderRadius: "50%",
+        background: isConnected ? "#00d4aa" : "#ffc857",
+        display: "inline-block",
+        flexShrink: 0,
+      }} />
+      {isConnected ? "Connected to trading server" : "Connecting to trading server…"}
     </div>
   );
 }

@@ -129,7 +129,7 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange,
           T
         </div>
         <span style={{ fontWeight: 700, fontSize: "1rem", letterSpacing: "-0.02em" }}>
-          Trade<span style={{ color: "#00d4aa" }}>Bot</span>
+          AIEdge<span style={{ color: "#00d4aa" }}> Swing</span>
         </span>
       </div>
 
