@@ -29,7 +29,7 @@ export default function Chart({
 
     (async () => {
       const lc = await import("lightweight-charts");
-      const { createChart, CrosshairMode, LineStyle, candlestickSeries } = lc as any;
+      const { createChart, CrosshairMode, LineStyle, CandlestickSeries } = lc as any;
 
       if (!containerRef.current) return;
 
@@ -57,7 +57,7 @@ export default function Chart({
 
       chartRef.current = chart;
 
-      candleSeriesRef.current = chart.addSeries(candlestickSeries, {
+      candleSeriesRef.current = chart.addSeries(CandlestickSeries, {
         upColor: "#00d4aa",
         downColor: "#ff4d6d",
         borderUpColor: "#00d4aa",
@@ -130,7 +130,7 @@ export default function Chart({
     if (!chartReady || !chartRef.current || candles.length === 0) return;
 
     (async () => {
-      const { lineSeries: ls } = (await import("lightweight-charts")) as any;
+      const { LineSeries: ls } = (await import("lightweight-charts")) as any;
 
       for (const s of overlaysRef.current) {
         try { chartRef.current?.removeSeries(s); } catch {}
