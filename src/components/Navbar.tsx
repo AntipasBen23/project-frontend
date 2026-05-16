@@ -11,11 +11,12 @@ interface NavbarProps {
   activeTab: TabId;
   onTabChange: (tab: TabId) => void;
   onStatusChange: (s: BotStatus) => void;
+  onPairChange?: (pair: string) => void;
   livePrice?: number | null;
   pair?: string;
 }
 
-export default function Navbar({ status, activeTab, onTabChange, onStatusChange, livePrice, pair: pairProp }: NavbarProps) {
+export default function Navbar({ status, activeTab, onTabChange, onStatusChange, onPairChange, livePrice, pair: pairProp }: NavbarProps) {
   const [time, setTime] = useState("");
   const [pair, setPair] = useState("BTCUSDT");
   const [strategy, setStrategy] = useState("RSI_MA");
@@ -221,7 +222,10 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange,
       <select
         className="input"
         value={pair}
-        onChange={(e) => setPair(e.target.value)}
+        onChange={(e) => {
+          setPair(e.target.value);
+          onPairChange?.(e.target.value);
+        }}
         style={{ width: 130, fontSize: "0.8rem" }}
       >
         <option value="BTCUSDT">BTC / USDT</option>

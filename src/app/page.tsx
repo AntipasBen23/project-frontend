@@ -100,6 +100,20 @@ export default function Dashboard() {
 
   useWebSocket(WS_URL, handleMessage);
 
+  async function handlePairChange(newPair: string) {
+    await fetch(`${API}/api/settings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tradingPair: newPair }),
+    });
+    setCandles([]);
+    setLivePrice(null);
+    fetch(`${API}/api/candles?symbol=${newPair}&interval=1m&limit=100`)
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setCandles(data); })
+      .catch(() => {});
+  }
+
   async function handleRiskUpdate(sl: number, tp: number, mdl: number) {
     setStopLoss(sl);
     setTakeProfit(tp);
@@ -120,6 +134,7 @@ export default function Dashboard() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onStatusChange={setStatus}
+        onPairChange={handlePairChange}
         livePrice={livePrice}
         pair={status?.activePair ?? "BTCUSDT"}
       />
