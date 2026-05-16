@@ -262,3 +262,8 @@ select.input option {
   background: #0f1f1c;
   color: #fff;
 }
+
+select.input option:checked {
+  background: #00d4aa;
+  color: #0a0a0a;
+}
