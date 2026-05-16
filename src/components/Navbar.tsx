@@ -103,11 +103,11 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange,
       style={{
         background: "#0a0a0a",
         borderBottom: "1px solid #1e3330",
-        padding: "0 1.5rem",
+        padding: "0 1.25rem",
         height: "60px",
         display: "flex",
         alignItems: "center",
-        gap: "1.5rem",
+        gap: "1rem",
         flexShrink: 0,
         zIndex: 50,
       }}
@@ -269,7 +269,7 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange,
       </nav>
 
       {/* Clock */}
-      <div style={{ color: "#8a9ba8", fontSize: "0.75rem", fontVariantNumeric: "tabular-nums", minWidth: 90, textAlign: "right" }}>
+      <div style={{ color: "#8a9ba8", fontSize: "0.75rem", fontVariantNumeric: "tabular-nums", minWidth: 90, flexShrink: 0, textAlign: "right" }}>
         {time}
       </div>
     </header>

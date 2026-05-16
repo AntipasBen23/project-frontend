@@ -164,7 +164,7 @@ export default function Dashboard() {
               <div style={{
                 flex: "0 0 35%",
                 overflow: "auto",
-                padding: "0.75rem",
+                padding: "1.25rem 0.75rem 0.75rem 0.75rem",
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.75rem",
