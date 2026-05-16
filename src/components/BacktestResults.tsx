@@ -16,7 +16,7 @@ export default function BacktestResults({ result }: BacktestResultsProps) {
 
     const init = async () => {
       const lc = await import("lightweight-charts") as any;
-      const { createChart, LineStyle, lineSeries: ls } = lc;
+      const { createChart, LineStyle, LineSeries } = lc;
 
       if (chartInstanceRef.current) {
         chartInstanceRef.current.remove();
@@ -41,7 +41,7 @@ export default function BacktestResults({ result }: BacktestResultsProps) {
       });
       chartInstanceRef.current = chart;
 
-      const series = chart.addSeries(ls, {
+      const series = chart.addSeries(LineSeries, {
         color: "#00d4aa",
         lineWidth: 2,
         title: "Portfolio Value",
