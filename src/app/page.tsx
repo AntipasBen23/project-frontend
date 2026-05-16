@@ -22,8 +22,9 @@ import BacktestForm from "@/components/BacktestForm";
 import BacktestResults from "@/components/BacktestResults";
 import SettingsTab from "@/components/SettingsTab";
 import ConnectionBanner from "@/components/ConnectionBanner";
+import { API_URL, WS_URL } from "@/lib/api";
 
-const API = "http://localhost:8080";
+const API = API_URL;
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>("live");
@@ -90,7 +91,7 @@ export default function Dashboard() {
     }
   }, [connected]);
 
-  useWebSocket("ws://localhost:8080/ws", handleMessage);
+  useWebSocket(WS_URL, handleMessage);
 
   async function handleRiskUpdate(sl: number, tp: number, mdl: number) {
     setStopLoss(sl);

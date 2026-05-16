@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-const API = "http://localhost:8080";
+import { API_URL } from "@/lib/api";
+const API = API_URL;
 
 export default function SettingsTab() {
   const [apiKey, setApiKey] = useState("");

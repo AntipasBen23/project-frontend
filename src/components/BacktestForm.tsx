@@ -3,7 +3,8 @@
 import { useState } from "react";
 import type { BacktestConfig } from "@/types";
 
-const API = "http://localhost:8080";
+import { API_URL } from "@/lib/api";
+const API = API_URL;
 
 interface BacktestFormProps {
   onStart: () => void;

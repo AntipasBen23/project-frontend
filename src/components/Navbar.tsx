@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import type { BotStatus, TabId } from "@/types";
 
-const API = "http://localhost:8080";
+import { API_URL } from "@/lib/api";
+const API = API_URL;
 
 interface NavbarProps {
   status: BotStatus | null;

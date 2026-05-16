@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Balance, PnL, Position } from "@/types";
 
-const API = "http://localhost:8080";
+import { API_URL } from "@/lib/api";
+const API = API_URL;
 
 interface StatsPanelProps {
   pnl: PnL | null;
