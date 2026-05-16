@@ -10,7 +10,7 @@ export default function SettingsTab() {
   const [apiSecret, setApiSecret] = useState("");
   const [pair, setPair] = useState("BTCUSDT");
   const [strategy, setStrategy] = useState("RSI_MA");
-  const [tradeSize, setTradeSize] = useState(0.001);
+  const [tradeSize, setTradeSize] = useState(0.0002);
   const [saved, setSaved] = useState(false);
   const [connectivity, setConnectivity] = useState<{ connected: boolean; error?: string } | null>(null);
   const [testing, setTesting] = useState(false);
@@ -120,8 +120,8 @@ export default function SettingsTab() {
               type="number"
               className="input"
               value={tradeSize}
-              step={0.001}
-              min={0.001}
+              step={0.00001}
+              min={0.00013}
               onChange={(e) => setTradeSize(Number(e.target.value))}
             />
           </div>
