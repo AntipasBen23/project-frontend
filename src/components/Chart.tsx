@@ -20,6 +20,7 @@ export default function Chart({
   const chartRef = useRef<any>(null);
   const candleSeriesRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
+  const pendingCandlesRef = useRef<Candle[]>([]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -64,6 +65,14 @@ export default function Chart({
       });
       candleSeriesRef.current = cs;
 
+      // Apply any candles that arrived before the chart finished initializing
+      if (pendingCandlesRef.current.length > 0) {
+        const data = pendingCandlesRef.current
+          .map((c) => ({ time: Math.floor(c.openTime / 1000) as any, open: c.open, high: c.high, low: c.low, close: c.close }))
+          .sort((a, b) => a.time - b.time);
+        cs.setData(data);
+      }
+
       // Price lines for SL/TP (updated separately via effect)
       chartRef.current._slLine = null;
       chartRef.current._tpLine = null;
@@ -89,9 +98,11 @@ export default function Chart({
     return () => cleanup?.();
   }, []);
 
-  // Update candles
+  // Update candles — always store latest so chart init can apply them if it wasn't ready yet
   useEffect(() => {
-    if (!candleSeriesRef.current || candles.length === 0) return;
+    if (candles.length === 0) return;
+    pendingCandlesRef.current = candles;
+    if (!candleSeriesRef.current) return;
     const data = candles
       .map((c) => ({
         time: Math.floor(c.openTime / 1000) as any,
