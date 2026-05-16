@@ -22,6 +22,7 @@ import BacktestForm from "@/components/BacktestForm";
 import BacktestResults from "@/components/BacktestResults";
 import SettingsTab from "@/components/SettingsTab";
 import ConnectionBanner from "@/components/ConnectionBanner";
+import OrderHistory from "@/components/OrderHistory";
 import { API_URL, WS_URL } from "@/lib/api";
 
 const API = API_URL;
@@ -36,6 +37,7 @@ export default function Dashboard() {
   const [position, setPosition] = useState<Position | null>(null);
   const [livePrice, setLivePrice] = useState<number | null>(null);
   const [connected, setConnected] = useState(false);
+  const [bottomTab, setBottomTab] = useState<"trades" | "orders">("trades");
   const [backtestResult, setBacktestResult] = useState<BacktestResult | null>(null);
   const [backtestProgress, setBacktestProgress] = useState<{ percent: number; message: string } | null>(null);
   const [stopLoss, setStopLoss] = useState(2.0);
@@ -186,9 +188,40 @@ export default function Dashboard() {
               borderTop: "1px solid #1e3330",
             }}>
               <div style={{ flex: "0 0 58%", borderRight: "1px solid #1e3330", display: "flex", flexDirection: "column" }}>
-                <SectionHeader label="Trade History" badge={trades.length} badgeColor="#00d4aa" />
+                <div style={{
+                  padding: "0 0.75rem",
+                  borderBottom: "1px solid #1e3330",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  flexShrink: 0,
+                  height: 36,
+                }}>
+                  {(["trades", "orders"] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setBottomTab(t)}
+                      style={{
+                        background: bottomTab === t ? "#1e3330" : "transparent",
+                        color: bottomTab === t ? "#00d4aa" : "#8a9ba8",
+                        border: "none",
+                        borderRadius: 4,
+                        padding: "0.2rem 0.6rem",
+                        fontSize: "0.7rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {t === "trades" ? `Bot Trades${trades.length > 0 ? ` (${trades.length})` : ""}` : "Exchange Orders"}
+                    </button>
+                  ))}
+                </div>
                 <div style={{ flex: 1, overflow: "hidden" }}>
-                  <TradeTable trades={trades} />
+                  {bottomTab === "trades" ? (
+                    <TradeTable trades={trades} />
+                  ) : (
+                    <OrderHistory symbol={status?.activePair ?? "BTCUSDT"} />
+                  )}
                 </div>
               </div>
               <div style={{ flex: "0 0 42%", display: "flex", flexDirection: "column" }}>

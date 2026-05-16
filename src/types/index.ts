@@ -99,3 +99,16 @@ export interface BacktestConfig {
 }
 
 export type TabId = "live" | "backtest" | "settings";
+
+export interface BinanceOrder {
+  symbol: string;
+  orderId: number;
+  side: "BUY" | "SELL";
+  type: string;
+  status: string;
+  price: number;
+  origQty: number;
+  executedQty: number;
+  quoteQty: number;
+  time: number;
+}
