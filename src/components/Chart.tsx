@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Candle } from "@/types";
 
 interface ChartProps {
@@ -20,7 +20,7 @@ export default function Chart({
   const chartRef = useRef<any>(null);
   const candleSeriesRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
-  const pendingCandlesRef = useRef<Candle[]>([]);
+  const [chartReady, setChartReady] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -31,7 +31,9 @@ export default function Chart({
       const lc = await import("lightweight-charts");
       const { createChart, CrosshairMode, LineStyle, candlestickSeries } = lc as any;
 
-      const chart = createChart(containerRef.current!, {
+      if (!containerRef.current) return;
+
+      const chart = createChart(containerRef.current, {
         layout: {
           background: { color: "#0a0a0a" },
           textColor: "#8a9ba8",
@@ -49,13 +51,13 @@ export default function Chart({
         },
         rightPriceScale: { borderColor: "#1e3330" },
         timeScale: { borderColor: "#1e3330", timeVisible: true, secondsVisible: false },
-        width: containerRef.current!.clientWidth,
-        height: containerRef.current!.clientHeight,
+        width: containerRef.current.clientWidth,
+        height: containerRef.current.clientHeight,
       });
 
       chartRef.current = chart;
 
-      const cs = chart.addSeries(candlestickSeries, {
+      candleSeriesRef.current = chart.addSeries(candlestickSeries, {
         upColor: "#00d4aa",
         downColor: "#ff4d6d",
         borderUpColor: "#00d4aa",
@@ -63,17 +65,7 @@ export default function Chart({
         wickUpColor: "#00d4aa80",
         wickDownColor: "#ff4d6d80",
       });
-      candleSeriesRef.current = cs;
 
-      // Apply any candles that arrived before the chart finished initializing
-      if (pendingCandlesRef.current.length > 0) {
-        const data = pendingCandlesRef.current
-          .map((c) => ({ time: Math.floor(c.openTime / 1000) as any, open: c.open, high: c.high, low: c.low, close: c.close }))
-          .sort((a, b) => a.time - b.time);
-        cs.setData(data);
-      }
-
-      // Price lines for SL/TP (updated separately via effect)
       chartRef.current._slLine = null;
       chartRef.current._tpLine = null;
 
@@ -85,7 +77,10 @@ export default function Chart({
           });
         }
       });
-      ro.observe(containerRef.current!);
+      ro.observe(containerRef.current);
+
+      // Signal React that the chart is ready — this triggers the candles/overlays effects
+      setChartReady(true);
 
       cleanup = () => {
         ro.disconnect();
@@ -98,11 +93,9 @@ export default function Chart({
     return () => cleanup?.();
   }, []);
 
-  // Update candles — always store latest so chart init can apply them if it wasn't ready yet
+  // Runs whenever candles change OR chart becomes ready — guaranteed to have series ref
   useEffect(() => {
-    if (candles.length === 0) return;
-    pendingCandlesRef.current = candles;
-    if (!candleSeriesRef.current) return;
+    if (!chartReady || !candleSeriesRef.current || candles.length === 0) return;
     const data = candles
       .map((c) => ({
         time: Math.floor(c.openTime / 1000) as any,
@@ -113,10 +106,11 @@ export default function Chart({
       }))
       .sort((a, b) => a.time - b.time);
     candleSeriesRef.current.setData(data);
-  }, [candles]);
+  }, [candles, chartReady]);
 
-  // Draw stop loss / take profit price lines
+  // SL / TP price lines
   useEffect(() => {
+    if (!chartReady) return;
     const cs = candleSeriesRef.current;
     if (!cs) return;
 
@@ -124,35 +118,20 @@ export default function Chart({
     if (cs._tpLine) { try { cs.removePriceLine(cs._tpLine); } catch {} cs._tpLine = null; }
 
     if (stopLossLevel) {
-      cs._slLine = cs.createPriceLine({
-        price: stopLossLevel,
-        color: "#ff4d6d",
-        lineWidth: 1,
-        lineStyle: 2, // Dashed
-        axisLabelVisible: true,
-        title: "SL",
-      });
+      cs._slLine = cs.createPriceLine({ price: stopLossLevel, color: "#ff4d6d", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "SL" });
     }
     if (takeProfitLevel) {
-      cs._tpLine = cs.createPriceLine({
-        price: takeProfitLevel,
-        color: "#00d4aa",
-        lineWidth: 1,
-        lineStyle: 2,
-        axisLabelVisible: true,
-        title: "TP",
-      });
+      cs._tpLine = cs.createPriceLine({ price: takeProfitLevel, color: "#00d4aa", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "TP" });
     }
-  }, [stopLossLevel, takeProfitLevel]);
+  }, [stopLossLevel, takeProfitLevel, chartReady]);
 
-  // Update overlays
+  // Overlay lines (MA / Bollinger / EMA)
   useEffect(() => {
-    if (!chartRef.current || candles.length === 0) return;
+    if (!chartReady || !chartRef.current || candles.length === 0) return;
 
     (async () => {
       const { lineSeries: ls } = (await import("lightweight-charts")) as any;
 
-      // Remove old overlays
       for (const s of overlaysRef.current) {
         try { chartRef.current?.removeSeries(s); } catch {}
       }
@@ -167,28 +146,23 @@ export default function Chart({
         const s = chartRef.current.addSeries(ls, { color, lineWidth: 1, title });
         s.setData(data.filter((d) => d.value > 0));
         overlaysRef.current.push(s);
-        return s;
       };
 
       if (activeStrategy === "RSI_MA") {
-        const shortMAs = computeSMAArray(closes, 9);
-        const longMAs = computeSMAArray(closes, 21);
-        addLine(shortMAs.map((v, i) => ({ time: times[i], value: v })), "#00d4aa", "MA9");
-        addLine(longMAs.map((v, i) => ({ time: times[i], value: v })), "#ffc857", "MA21");
+        addLine(computeSMAArray(closes, 9).map((v, i) => ({ time: times[i], value: v })), "#00d4aa", "MA9");
+        addLine(computeSMAArray(closes, 21).map((v, i) => ({ time: times[i], value: v })), "#ffc857", "MA21");
       } else if (activeStrategy === "BOLLINGER") {
         const { upper, mid, lower } = computeBollingerArray(closes, 20, 2);
         addLine(upper.map((v, i) => ({ time: times[i], value: v })), "#ff4d6d60", "Upper");
         addLine(mid.map((v, i) => ({ time: times[i], value: v })), "#8a9ba860", "Mid");
         addLine(lower.map((v, i) => ({ time: times[i], value: v })), "#00d4aa60", "Lower");
       } else if (activeStrategy === "EMA") {
-        const fastEMAs = computeEMAArray(closes, 9);
-        const slowEMAs = computeEMAArray(closes, 21);
-        addLine(fastEMAs.map((v, i) => ({ time: times[i], value: v })), "#00d4aa", "EMA9");
-        addLine(slowEMAs.map((v, i) => ({ time: times[i], value: v })), "#ffc857", "EMA21");
+        addLine(computeEMAArray(closes, 9).map((v, i) => ({ time: times[i], value: v })), "#00d4aa", "EMA9");
+        addLine(computeEMAArray(closes, 21).map((v, i) => ({ time: times[i], value: v })), "#ffc857", "EMA21");
       }
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [candles, activeStrategy]);
+  }, [candles, activeStrategy, chartReady]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", background: "#0a0a0a" }}>
@@ -224,8 +198,7 @@ export default function Chart({
 function computeSMAArray(closes: number[], period: number): number[] {
   return closes.map((_, i) => {
     if (i < period - 1) return 0;
-    const slice = closes.slice(i - period + 1, i + 1);
-    return slice.reduce((a, b) => a + b, 0) / period;
+    return closes.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period;
   });
 }
 
@@ -249,8 +222,7 @@ function computeBollingerArray(closes: number[], period: number, mult: number) {
   for (let i = period - 1; i < closes.length; i++) {
     const slice = closes.slice(i - period + 1, i + 1);
     const mean = slice.reduce((a, b) => a + b, 0) / period;
-    const variance = slice.reduce((a, b) => a + (b - mean) ** 2, 0) / period;
-    const std = Math.sqrt(variance);
+    const std = Math.sqrt(slice.reduce((a, b) => a + (b - mean) ** 2, 0) / period);
     upper[i] = mean + mult * std;
     mid[i] = mean;
     lower[i] = mean - mult * std;
