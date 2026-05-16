@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "AIEdge Swing — Crypto Trading Dashboard",
   description: "Automated crypto trading with live dashboard, backtesting and risk management",
+  icons: { icon: "/icon.svg" },
 };
 
 export default function RootLayout({
