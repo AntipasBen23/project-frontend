@@ -144,27 +144,6 @@ export default function SettingsTab() {
         </div>
       </div>
 
-      <div className="card">
-        <div style={{ fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.75rem", color: "#fff" }}>
-          About
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "#8a9ba8" }}>
-          <Row label="Version" value="2.0.0" />
-          <Row label="Backend" value="Go 1.25 + Binance Testnet" />
-          <Row label="Frontend" value="Next.js 16 + TradingView Charts" />
-          <Row label="Mode" value="Testnet (No real funds)" />
-          <Row label="WebSocket" value="ws://localhost:8080/ws" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span>{label}</span>
-      <span style={{ color: "#fff", fontWeight: 500 }}>{value}</span>
     </div>
   );
 }
