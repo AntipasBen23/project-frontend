@@ -104,6 +104,14 @@ export default function SettingsTab() {
             <select className="input" value={pair} onChange={(e) => setPair(e.target.value)}>
               <option value="BTCUSDT">BTC / USDT</option>
               <option value="ETHUSDT">ETH / USDT</option>
+              <option value="BNBUSDT">BNB / USDT</option>
+              <option value="SOLUSDT">SOL / USDT</option>
+              <option value="XRPUSDT">XRP / USDT</option>
+              <option value="ADAUSDT">ADA / USDT</option>
+              <option value="DOGEUSDT">DOGE / USDT</option>
+              <option value="LTCUSDT">LTC / USDT</option>
+              <option value="DOTUSDT">DOT / USDT</option>
+              <option value="AVAXUSDT">AVAX / USDT</option>
             </select>
           </div>
           <div>
