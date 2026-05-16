@@ -164,10 +164,12 @@ export default function Dashboard() {
               <div style={{
                 flex: "0 0 35%",
                 overflow: "auto",
-                padding: "1.25rem 0.75rem 0.75rem 0.75rem",
+                padding: "0.75rem",
+                paddingTop: "1.25rem",
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.75rem",
+                boxSizing: "border-box",
               }}>
                 <StatsPanel
                   pnl={pnl}
