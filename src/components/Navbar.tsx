@@ -10,13 +10,17 @@ interface NavbarProps {
   activeTab: TabId;
   onTabChange: (tab: TabId) => void;
   onStatusChange: (s: BotStatus) => void;
+  livePrice?: number | null;
+  pair?: string;
 }
 
-export default function Navbar({ status, activeTab, onTabChange, onStatusChange }: NavbarProps) {
+export default function Navbar({ status, activeTab, onTabChange, onStatusChange, livePrice, pair: pairProp }: NavbarProps) {
   const [time, setTime] = useState("");
   const [pair, setPair] = useState("BTCUSDT");
   const [strategy, setStrategy] = useState("RSI_MA");
   const [loading, setLoading] = useState<string | null>(null);
+  const [prevPrice, setPrevPrice] = useState<number | null>(null);
+  const [priceDir, setPriceDir] = useState<"up" | "down" | null>(null);
 
   useEffect(() => {
     const tick = () => setTime(new Date().toUTCString().slice(17, 25) + " UTC");
@@ -31,6 +35,18 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange 
       setStrategy(status.activeStrategy);
     }
   }, [status]);
+
+  // Track price direction for colour flash
+  useEffect(() => {
+    if (livePrice == null) return;
+    if (prevPrice != null) {
+      setPriceDir(livePrice > prevPrice ? "up" : livePrice < prevPrice ? "down" : null);
+      const t = setTimeout(() => setPriceDir(null), 600);
+      return () => clearTimeout(t);
+    }
+    setPrevPrice(livePrice);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [livePrice]);
 
   async function post(endpoint: string, body?: object) {
     const r = await fetch(`${API}${endpoint}`, {
@@ -116,6 +132,37 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange 
           Trade<span style={{ color: "#00d4aa" }}>Bot</span>
         </span>
       </div>
+
+      {/* Live price ticker */}
+      {livePrice != null && (
+        <div style={{
+          display: "flex",
+          alignItems: "baseline",
+          gap: "0.375rem",
+          background: "#0f1f1c",
+          border: "1px solid #1e3330",
+          borderRadius: 8,
+          padding: "0.3rem 0.75rem",
+        }}>
+          <span style={{ fontSize: "0.65rem", color: "#8a9ba8", fontWeight: 600 }}>
+            {(pairProp ?? pair).replace("USDT", "/USDT")}
+          </span>
+          <span style={{
+            fontSize: "0.9rem",
+            fontWeight: 700,
+            fontVariantNumeric: "tabular-nums",
+            color: priceDir === "up" ? "#00d4aa" : priceDir === "down" ? "#ff4d6d" : "#fff",
+            transition: "color 0.3s",
+          }}>
+            ${livePrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
+          {priceDir && (
+            <span style={{ fontSize: "0.65rem", color: priceDir === "up" ? "#00d4aa" : "#ff4d6d" }}>
+              {priceDir === "up" ? "▲" : "▼"}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Status badge */}
       <div

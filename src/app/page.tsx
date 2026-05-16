@@ -21,6 +21,7 @@ import BotBrainLog from "@/components/BotBrainLog";
 import BacktestForm from "@/components/BacktestForm";
 import BacktestResults from "@/components/BacktestResults";
 import SettingsTab from "@/components/SettingsTab";
+import ConnectionBanner from "@/components/ConnectionBanner";
 
 const API = "http://localhost:8080";
 
@@ -32,6 +33,8 @@ export default function Dashboard() {
   const [brainLogs, setBrainLogs] = useState<BrainLog[]>([]);
   const [pnl, setPnl] = useState<PnL | null>(null);
   const [position, setPosition] = useState<Position | null>(null);
+  const [livePrice, setLivePrice] = useState<number | null>(null);
+  const [connected, setConnected] = useState(false);
   const [backtestResult, setBacktestResult] = useState<BacktestResult | null>(null);
   const [backtestProgress, setBacktestProgress] = useState<{ percent: number; message: string } | null>(null);
   const [stopLoss, setStopLoss] = useState(2.0);
@@ -39,13 +42,16 @@ export default function Dashboard() {
   const [maxDailyLoss, setMaxDailyLoss] = useState(5.0);
 
   const handleMessage = useCallback((event: string, data: unknown) => {
+    if (!connected) setConnected(true);
+
     switch (event) {
       case "status":
         setStatus(data as BotStatus);
         break;
       case "price": {
-        const d = data as { candles?: Candle[] };
+        const d = data as { candles?: Candle[]; price?: number };
         if (d.candles) setCandles(d.candles);
+        if (d.price) setLivePrice(d.price);
         break;
       }
       case "trade":
@@ -60,9 +66,6 @@ export default function Dashboard() {
           }
           return [t, ...prev].slice(0, 50);
         });
-        if (t.status === "OPEN") {
-          // new open trade — clear position tracking
-        }
         break;
       }
       case "position":
@@ -85,7 +88,7 @@ export default function Dashboard() {
         setBacktestProgress(null);
         break;
     }
-  }, []);
+  }, [connected]);
 
   useWebSocket("ws://localhost:8080/ws", handleMessage);
 
@@ -109,41 +112,30 @@ export default function Dashboard() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onStatusChange={setStatus}
+        livePrice={livePrice}
+        pair={status?.activePair ?? "BTCUSDT"}
       />
+
+      <ConnectionBanner connected={connected} />
 
       <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         {/* LIVE TRADING TAB */}
         {activeTab === "live" && (
           <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-            {/* Top section: Chart + Stats */}
+            {/* Top: Chart (65%) + Stats (35%) */}
             <div style={{
-              flex: "0 0 auto",
-              height: "calc(100vh - 60px - 260px)",
-              minHeight: 320,
+              flex: "1 1 auto",
+              minHeight: 300,
               display: "flex",
-              gap: "0",
             }}>
-              {/* Chart area (65%) */}
-              <div style={{
-                flex: "0 0 65%",
-                borderRight: "1px solid #1e3330",
-                display: "flex",
-                flexDirection: "column",
-              }}>
-                <div style={{
-                  height: "100%",
-                  overflow: "hidden",
-                }}>
-                  <Chart
-                    candles={candles}
-                    activeStrategy={activeStrategy}
-                    stopLossLevel={position?.stopLoss}
-                    takeProfitLevel={position?.takeProfit}
-                  />
-                </div>
+              <div style={{ flex: "0 0 65%", borderRight: "1px solid #1e3330", overflow: "hidden" }}>
+                <Chart
+                  candles={candles}
+                  activeStrategy={activeStrategy}
+                  stopLossLevel={position?.stopLoss}
+                  takeProfitLevel={position?.takeProfit}
+                />
               </div>
-
-              {/* Stats panel (35%) */}
               <div style={{
                 flex: "0 0 35%",
                 overflow: "auto",
@@ -164,68 +156,21 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Bottom section: Trade table + Bot Brain */}
+            {/* Bottom: Trade table (58%) + Bot Brain (42%) */}
             <div style={{
-              height: 260,
+              flex: "0 0 260px",
               display: "flex",
               borderTop: "1px solid #1e3330",
-              flexShrink: 0,
             }}>
-              {/* Trade table */}
-              <div style={{
-                flex: "0 0 58%",
-                borderRight: "1px solid #1e3330",
-                display: "flex",
-                flexDirection: "column",
-              }}>
-                <div style={{
-                  padding: "0.5rem 0.75rem",
-                  borderBottom: "1px solid #1e3330",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}>
-                  <span className="label">Trade History</span>
-                  <span style={{
-                    background: "#1e3330",
-                    color: "#00d4aa",
-                    borderRadius: 4,
-                    padding: "0.1rem 0.4rem",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                  }}>{trades.length}</span>
-                </div>
-                <div style={{ flex: 1, overflow: "hidden", padding: "0 0.25rem" }}>
+              <div style={{ flex: "0 0 58%", borderRight: "1px solid #1e3330", display: "flex", flexDirection: "column" }}>
+                <SectionHeader label="Trade History" badge={trades.length} badgeColor="#00d4aa" />
+                <div style={{ flex: 1, overflow: "hidden" }}>
                   <TradeTable trades={trades} />
                 </div>
               </div>
-
-              {/* Bot Brain log */}
-              <div style={{
-                flex: "0 0 42%",
-                display: "flex",
-                flexDirection: "column",
-              }}>
-                <div style={{
-                  padding: "0.5rem 0.75rem",
-                  borderBottom: "1px solid #1e3330",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}>
-                  <span className="label">🤖 Bot Brain</span>
-                  {brainLogs.length > 0 && (
-                    <span style={{
-                      background: "#1e3330",
-                      color: "#8a9ba8",
-                      borderRadius: 4,
-                      padding: "0.1rem 0.4rem",
-                      fontSize: "0.65rem",
-                      fontWeight: 700,
-                    }}>{brainLogs.length}</span>
-                  )}
-                </div>
-                <div style={{ flex: 1, overflow: "hidden", padding: "0 0.25rem" }}>
+              <div style={{ flex: "0 0 42%", display: "flex", flexDirection: "column" }}>
+                <SectionHeader label="🤖 Bot Brain" badge={brainLogs.length} />
+                <div style={{ flex: 1, overflow: "hidden" }}>
                   <BotBrainLog logs={brainLogs} />
                 </div>
               </div>
@@ -262,6 +207,35 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+function SectionHeader({ label, badge, badgeColor = "#8a9ba8" }: {
+  label: string;
+  badge?: number;
+  badgeColor?: string;
+}) {
+  return (
+    <div style={{
+      padding: "0.5rem 0.75rem",
+      borderBottom: "1px solid #1e3330",
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      flexShrink: 0,
+    }}>
+      <span className="label">{label}</span>
+      {badge !== undefined && badge > 0 && (
+        <span style={{
+          background: "#1e3330",
+          color: badgeColor,
+          borderRadius: 4,
+          padding: "0.1rem 0.4rem",
+          fontSize: "0.65rem",
+          fontWeight: 700,
+        }}>{badge}</span>
+      )}
     </div>
   );
 }
