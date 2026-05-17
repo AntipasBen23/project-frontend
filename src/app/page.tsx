@@ -23,6 +23,7 @@ import BacktestResults from "@/components/BacktestResults";
 import SettingsTab from "@/components/SettingsTab";
 import ConnectionBanner from "@/components/ConnectionBanner";
 import OrderHistory from "@/components/OrderHistory";
+import AIAnalysis from "@/components/AIAnalysis";
 import { API_URL, WS_URL } from "@/lib/api";
 
 const API = API_URL;
@@ -180,6 +181,10 @@ export default function Dashboard() {
                   onRiskUpdate={handleRiskUpdate}
                 />
                 <StrategyConfig activeStrategy={activeStrategy} />
+                <AIAnalysis
+                  symbol={status?.activePair ?? "BTCUSDT"}
+                  isRunning={status?.state === "RUNNING"}
+                />
               </div>
             </div>
 
