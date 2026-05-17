@@ -81,7 +81,7 @@ export default function AIAnalysis({ symbol, isRunning }: AIAnalysisProps) {
       {/* Content */}
       {error ? (
         <div style={{ color: "#ff4d6d", fontSize: "0.78rem", lineHeight: 1.5 }}>
-          {error.includes("ANTHROPIC_API_KEY") ? "Add ANTHROPIC_API_KEY to Railway environment variables." : error}
+          {error.includes("OPENAI_API_KEY") ? "Add OPENAI_API_KEY to Railway environment variables." : error}
         </div>
       ) : loading && !analysis ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -124,7 +124,7 @@ export default function AIAnalysis({ symbol, isRunning }: AIAnalysisProps) {
             padding: "0.15rem 0.45rem",
           }}>
             <span style={{ fontSize: "0.6rem", color: "#00d4aa", fontWeight: 700, letterSpacing: "0.05em" }}>
-              ✦ CLAUDE AI
+              ✦ GPT-4o mini
             </span>
           </div>
           {timestamp && (
