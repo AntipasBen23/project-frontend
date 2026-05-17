@@ -15,13 +15,12 @@ const typeStyle: Record<string, { color: string; icon: string }> = {
 };
 
 export default function BotBrainLog({ logs }: BotBrainLogProps) {
-  const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevLen = useRef(0);
 
   useEffect(() => {
-    if (logs.length > prevLen.current) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (logs.length > prevLen.current && containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
     prevLen.current = logs.length;
   }, [logs]);
@@ -90,7 +89,6 @@ export default function BotBrainLog({ logs }: BotBrainLogProps) {
           );
         })
       )}
-      <div ref={bottomRef} />
     </div>
   );
 }
