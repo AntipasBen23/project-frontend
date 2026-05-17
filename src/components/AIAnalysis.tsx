@@ -105,33 +105,17 @@ export default function AIAnalysis({ symbol, isRunning }: AIAnalysisProps) {
       )}
 
       {/* Footer */}
-      {(analysis || loading) && (
+      {timestamp && (analysis || loading) && (
         <div style={{
           marginTop: "0.75rem",
           paddingTop: "0.6rem",
           borderTop: "1px solid #1e3330",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          justifyContent: "flex-end",
         }}>
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.3rem",
-            background: "rgba(0,212,170,0.08)",
-            border: "1px solid rgba(0,212,170,0.2)",
-            borderRadius: 4,
-            padding: "0.15rem 0.45rem",
-          }}>
-            <span style={{ fontSize: "0.6rem", color: "#00d4aa", fontWeight: 700, letterSpacing: "0.05em" }}>
-              ✦ GPT-4o mini
-            </span>
-          </div>
-          {timestamp && (
-            <span style={{ fontSize: "0.65rem", color: "#8a9ba8" }}>
-              {timestamp.toLocaleTimeString()}
-            </span>
-          )}
+          <span style={{ fontSize: "0.65rem", color: "#8a9ba8" }}>
+            Updated {timestamp.toLocaleTimeString()}
+          </span>
         </div>
       )}
     </div>

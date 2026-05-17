@@ -38,7 +38,7 @@ export default function Dashboard() {
   const [position, setPosition] = useState<Position | null>(null);
   const [livePrice, setLivePrice] = useState<number | null>(null);
   const [connected, setConnected] = useState(false);
-  const [bottomTab, setBottomTab] = useState<"trades" | "orders">("trades");
+  const [bottomTab, setBottomTab] = useState<"trades" | "orders" | "analysis">("trades");
   const [backtestResult, setBacktestResult] = useState<BacktestResult | null>(null);
   const [backtestProgress, setBacktestProgress] = useState<{ percent: number; message: string } | null>(null);
   const [stopLoss, setStopLoss] = useState(2.0);
@@ -181,10 +181,6 @@ export default function Dashboard() {
                   onRiskUpdate={handleRiskUpdate}
                 />
                 <StrategyConfig activeStrategy={activeStrategy} />
-                <AIAnalysis
-                  symbol={status?.activePair ?? "BTCUSDT"}
-                  isRunning={status?.state === "RUNNING"}
-                />
               </div>
             </div>
 
@@ -204,7 +200,7 @@ export default function Dashboard() {
                   flexShrink: 0,
                   height: 36,
                 }}>
-                  {(["trades", "orders"] as const).map((t) => (
+                  {(["trades", "orders", "analysis"] as const).map((t) => (
                     <button
                       key={t}
                       onClick={() => setBottomTab(t)}
@@ -219,15 +215,22 @@ export default function Dashboard() {
                         cursor: "pointer",
                       }}
                     >
-                      {t === "trades" ? `Bot Trades${trades.length > 0 ? ` (${trades.length})` : ""}` : "Exchange Orders"}
+                      {t === "trades" ? `Bot Trades${trades.length > 0 ? ` (${trades.length})` : ""}` : t === "orders" ? "Exchange Orders" : "AI Analysis"}
                     </button>
                   ))}
                 </div>
                 <div style={{ flex: 1, overflow: "hidden" }}>
                   {bottomTab === "trades" ? (
                     <TradeTable trades={trades} />
-                  ) : (
+                  ) : bottomTab === "orders" ? (
                     <OrderHistory symbol={status?.activePair ?? "BTCUSDT"} />
+                  ) : (
+                    <div style={{ padding: "0.75rem", height: "100%", boxSizing: "border-box", overflow: "auto" }}>
+                      <AIAnalysis
+                        symbol={status?.activePair ?? "BTCUSDT"}
+                        isRunning={status?.state === "RUNNING"}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
