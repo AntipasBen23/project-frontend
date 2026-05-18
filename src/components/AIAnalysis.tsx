@@ -166,14 +166,17 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
         {data!.analysis}
       </div>
 
-      {/* Recommendation card */}
+      {/* Recommendation card — activate button lives inside so it's always visible together */}
       <div style={{
         borderRadius: 8,
         border: `1px solid ${favorable ? "rgba(0,212,170,0.4)" : "rgba(255,200,87,0.4)"}`,
         background: favorable ? "rgba(0,212,170,0.07)" : "rgba(255,200,87,0.07)",
         padding: "0.8rem 0.9rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.6rem",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.4rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
           <span style={{ fontSize: "0.9rem" }}>{favorable ? "✓" : "⚠"}</span>
           <span style={{ fontSize: "0.72rem", fontWeight: 700, color: favorable ? "#00d4aa" : "#ffc857", letterSpacing: "0.05em" }}>
             {favorable ? "CONDITIONS FAVOURABLE" : "CONDITIONS UNFAVOURABLE"}
@@ -182,37 +185,36 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
         <div style={{ fontSize: "0.78rem", color: "#d4e8e4", lineHeight: 1.6 }}>
           {data!.reasoning}
         </div>
+
+        {favorable && !isRunning && (
+          <button
+            onClick={onStartBot}
+            style={{
+              width: "100%",
+              background: "#00d4aa",
+              border: "none",
+              borderRadius: 8,
+              color: "#0a0a0a",
+              cursor: "pointer",
+              fontSize: "0.85rem",
+              fontWeight: 700,
+              padding: "0.6rem",
+              fontFamily: "inherit",
+              letterSpacing: "0.02em",
+              marginTop: "0.2rem",
+            }}
+          >
+            Activate the Bot →
+          </button>
+        )}
+
+        {isRunning && (
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#00d4aa", boxShadow: "0 0 4px #00d4aa", flexShrink: 0 }} />
+            <span style={{ fontSize: "0.7rem", color: "#8a9ba8" }}>Bot is active — analysis refreshes every 45 seconds</span>
+          </div>
+        )}
       </div>
-
-      {/* Activate button */}
-      {favorable && !isRunning && (
-        <button
-          onClick={onStartBot}
-          style={{
-            width: "100%",
-            background: "#00d4aa",
-            border: "none",
-            borderRadius: 8,
-            color: "#0a0a0a",
-            cursor: "pointer",
-            fontSize: "0.85rem",
-            fontWeight: 700,
-            padding: "0.7rem",
-            fontFamily: "inherit",
-            letterSpacing: "0.02em",
-          }}
-        >
-          Activate the Bot →
-        </button>
-      )}
-
-      {/* Bot already running */}
-      {isRunning && (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#00d4aa", boxShadow: "0 0 4px #00d4aa", flexShrink: 0 }} />
-          <span style={{ fontSize: "0.7rem", color: "#8a9ba8" }}>Bot is active — analysis refreshes every 45 seconds</span>
-        </div>
-      )}
 
       {/* Timestamp */}
       {data?.timestamp && (
