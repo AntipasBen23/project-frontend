@@ -194,7 +194,7 @@ export default function Dashboard() {
               display: "flex",
               borderTop: "1px solid #1e3330",
             }}>
-              <div style={{ flex: "0 0 58%", borderRight: "1px solid #1e3330", display: "flex", flexDirection: "column" }}>
+              <div style={{ flex: "0 0 58%", borderRight: "1px solid #1e3330", display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
                 <div style={{
                   padding: "0 0.75rem",
                   borderBottom: "1px solid #1e3330",
