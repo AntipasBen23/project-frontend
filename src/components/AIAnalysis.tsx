@@ -64,32 +64,17 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "0.75rem",
-        padding: "1rem 1.5rem",
+        gap: "0.6rem",
+        padding: "0.75rem 1.5rem",
         textAlign: "center",
         height: "100%",
         boxSizing: "border-box",
       }}>
-        <div style={{ fontSize: "2rem" }}>🤖</div>
-        <div>
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.35rem" }}>
-            Start with AI Analysis
-          </div>
-          <div style={{ color: "#8a9ba8", fontSize: "0.75rem", lineHeight: 1.6, maxWidth: 280 }}>
-            Let AI assess current market conditions before activating the bot.
-          </div>
+        <div style={{ color: "#fff", fontWeight: 700, fontSize: "0.88rem" }}>
+          Start with AI Analysis
         </div>
-
-        {/* Step flow */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.68rem", color: "#8a9ba8" }}>
-          <span style={{ background: "#00d4aa", color: "#0a0a0a", borderRadius: 4, padding: "0.15rem 0.45rem", fontWeight: 700 }}>1</span>
-          <span>Analyse</span>
-          <span style={{ color: "#1e3330" }}>──</span>
-          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.15rem 0.45rem", fontWeight: 700, color: "#8a9ba8" }}>2</span>
-          <span>Review signal</span>
-          <span style={{ color: "#1e3330" }}>──</span>
-          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.15rem 0.45rem", fontWeight: 700, color: "#8a9ba8" }}>3</span>
-          <span>Activate bot</span>
+        <div style={{ color: "#8a9ba8", fontSize: "0.72rem", lineHeight: 1.5, maxWidth: 280 }}>
+          Let AI assess market conditions before activating the bot.
         </div>
 
         <button
@@ -100,15 +85,27 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
             borderRadius: 8,
             color: "#0a0a0a",
             cursor: "pointer",
-            fontSize: "0.85rem",
+            fontSize: "0.82rem",
             fontWeight: 700,
-            padding: "0.65rem 1.75rem",
+            padding: "0.55rem 1.5rem",
             fontFamily: "inherit",
             letterSpacing: "0.02em",
           }}
         >
           Analyse Market →
         </button>
+
+        {/* Step flow */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.65rem", color: "#8a9ba8" }}>
+          <span style={{ background: "#00d4aa", color: "#0a0a0a", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>1</span>
+          <span>Analyse</span>
+          <span style={{ color: "#2a3f3c" }}>──</span>
+          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>2</span>
+          <span>Review signal</span>
+          <span style={{ color: "#2a3f3c" }}>──</span>
+          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>3</span>
+          <span>Activate bot</span>
+        </div>
       </div>
     );
   }
