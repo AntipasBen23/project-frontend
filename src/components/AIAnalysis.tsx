@@ -144,7 +144,7 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
 
   // Result state
   return (
-    <div style={{ padding: "0.85rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+    <div style={{ padding: "0.75rem", display: "flex", flexDirection: "column", gap: "0.65rem" }}>
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -162,7 +162,7 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
       </div>
 
       {/* Analysis text */}
-      <div style={{ fontSize: "0.8rem", lineHeight: 1.7, color: "#d4e8e4" }}>
+      <div style={{ fontSize: "0.77rem", lineHeight: 1.6, color: "#d4e8e4" }}>
         {data!.analysis}
       </div>
 

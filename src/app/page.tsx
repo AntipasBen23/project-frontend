@@ -155,7 +155,7 @@ export default function Dashboard() {
             {/* Top: Chart (65%) + Stats (35%) */}
             <div style={{
               flex: "1 1 auto",
-              minHeight: 300,
+              minHeight: 150,
               display: "flex",
             }}>
               <div style={{ flex: "0 0 65%", borderRight: "1px solid #1e3330", overflow: "hidden" }}>
@@ -190,7 +190,8 @@ export default function Dashboard() {
 
             {/* Bottom: Trade table (58%) + Bot Brain (42%) */}
             <div style={{
-              flex: "0 0 380px",
+              height: "42vh",
+              flexShrink: 0,
               display: "flex",
               borderTop: "1px solid #1e3330",
             }}>
@@ -241,7 +242,7 @@ export default function Dashboard() {
                     );
                   })}
                 </div>
-                <div style={{ height: "344px", overflowY: "auto" }}>
+                <div style={{ height: "calc(42vh - 36px)", overflowY: "auto" }}>
                   {bottomTab === "trades" ? (
                     <TradeTable trades={trades} />
                   ) : bottomTab === "orders" ? (
