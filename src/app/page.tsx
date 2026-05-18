@@ -190,7 +190,7 @@ export default function Dashboard() {
 
             {/* Bottom: Trade table (58%) + Bot Brain (42%) */}
             <div style={{
-              flex: "0 0 260px",
+              flex: "0 0 300px",
               display: "flex",
               borderTop: "1px solid #1e3330",
             }}>
