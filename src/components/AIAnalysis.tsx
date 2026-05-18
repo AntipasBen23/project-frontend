@@ -6,12 +6,19 @@ import { API_URL } from "@/lib/api";
 interface AIAnalysisProps {
   symbol: string;
   isRunning: boolean;
+  onStartBot: () => void;
 }
 
-export default function AIAnalysis({ symbol, isRunning }: AIAnalysisProps) {
-  const [analysis, setAnalysis] = useState<string>("");
+interface AnalysisData {
+  analysis: string;
+  recommendation: "favorable" | "not_favorable";
+  reasoning: string;
+  timestamp: Date;
+}
+
+export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysisProps) {
+  const [data, setData] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [timestamp, setTimestamp] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -20,12 +27,16 @@ export default function AIAnalysis({ symbol, isRunning }: AIAnalysisProps) {
     setError(null);
     try {
       const r = await fetch(`${API_URL}/api/ai-analysis?symbol=${symbol}`);
-      const data = await r.json();
+      const json = await r.json();
       if (!r.ok) {
-        setError(data.error ?? "Analysis failed");
+        setError(json.error ?? "Analysis failed");
       } else {
-        setAnalysis(data.analysis);
-        setTimestamp(new Date(data.timestamp));
+        setData({
+          analysis: json.analysis,
+          recommendation: json.recommendation,
+          reasoning: json.reasoning,
+          timestamp: new Date(json.timestamp),
+        });
       }
     } catch {
       setError("Could not reach backend");
@@ -33,10 +44,9 @@ export default function AIAnalysis({ symbol, isRunning }: AIAnalysisProps) {
     setLoading(false);
   }, [symbol]);
 
-  // Auto-refresh every 45 seconds when bot is running
+  // Auto-refresh every 45 seconds while bot is running
   useEffect(() => {
     if (isRunning) {
-      fetchAnalysis();
       intervalRef.current = setInterval(fetchAnalysis, 45000);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -44,77 +54,163 @@ export default function AIAnalysis({ symbol, isRunning }: AIAnalysisProps) {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [isRunning, fetchAnalysis]);
 
-  const dots = loading ? "..." : "";
+  const favorable = data?.recommendation === "favorable";
 
+  // Empty state
+  if (!loading && !data && !error) {
+    return (
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "1rem",
+        padding: "2.5rem 1.5rem",
+        textAlign: "center",
+        height: "100%",
+        boxSizing: "border-box",
+      }}>
+        <div style={{ fontSize: "2.2rem" }}>🤖</div>
+        <div>
+          <div style={{ color: "#d4e8e4", fontWeight: 700, fontSize: "0.95rem", marginBottom: "0.5rem" }}>
+            AI Market Analysis
+          </div>
+          <div style={{ color: "#8a9ba8", fontSize: "0.78rem", lineHeight: 1.65, maxWidth: 320 }}>
+            Get a real-time AI assessment of current market conditions before activating the bot.
+          </div>
+        </div>
+        <button
+          onClick={fetchAnalysis}
+          style={{
+            background: "#00d4aa",
+            border: "none",
+            borderRadius: 8,
+            color: "#0a0a0a",
+            cursor: "pointer",
+            fontSize: "0.85rem",
+            fontWeight: 700,
+            padding: "0.65rem 1.75rem",
+            fontFamily: "inherit",
+            letterSpacing: "0.02em",
+          }}
+        >
+          Analyse Market
+        </button>
+      </div>
+    );
+  }
+
+  // Loading state (initial)
+  if (loading && !data) {
+    return (
+      <div style={{ padding: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffc857", boxShadow: "0 0 6px #ffc857", flexShrink: 0 }} />
+          <span className="label">Analysing Market Conditions…</span>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          {[95, 80, 70, 85, 60].map((w, i) => (
+            <div key={i} className="skeleton" style={{ height: 12, width: `${w}%`, borderRadius: 4 }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div style={{ padding: "1rem" }}>
+        <div style={{ color: "#ff4d6d", fontSize: "0.78rem", marginBottom: "0.75rem", lineHeight: 1.5 }}>
+          {error.includes("OPENAI_API_KEY") ? "Add OPENAI_API_KEY to your environment variables." : error}
+        </div>
+        <button
+          onClick={fetchAnalysis}
+          style={{ background: "none", border: "1px solid #1e3330", borderRadius: 6, color: "#00d4aa", cursor: "pointer", fontSize: "0.7rem", padding: "0.3rem 0.75rem", fontFamily: "inherit", fontWeight: 600 }}
+        >
+          ↻ Retry
+        </button>
+      </div>
+    );
+  }
+
+  // Result state
   return (
-    <div className="card" style={{ flexShrink: 0 }}>
+    <div style={{ padding: "0.85rem", display: "flex", flexDirection: "column", gap: "0.85rem", height: "100%", boxSizing: "border-box", overflow: "auto" }}>
+
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <div style={{
-            width: 8, height: 8, borderRadius: "50%",
-            background: loading ? "#ffc857" : "#00d4aa",
-            boxShadow: `0 0 6px ${loading ? "#ffc857" : "#00d4aa"}`,
-            flexShrink: 0,
-          }} />
-          <span className="label">AI Analysis</span>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00d4aa", boxShadow: "0 0 6px #00d4aa", flexShrink: 0 }} />
+          <span className="label">AI Market Analysis</span>
         </div>
         <button
           onClick={fetchAnalysis}
           disabled={loading}
-          style={{
-            background: "none",
-            border: "1px solid #1e3330",
-            borderRadius: 6,
-            color: loading ? "#8a9ba8" : "#00d4aa",
-            cursor: loading ? "default" : "pointer",
-            fontSize: "0.65rem",
-            padding: "0.2rem 0.5rem",
-            fontWeight: 600,
-            fontFamily: "inherit",
-          }}
+          style={{ background: "none", border: "1px solid #1e3330", borderRadius: 6, color: loading ? "#8a9ba8" : "#00d4aa", cursor: loading ? "default" : "pointer", fontSize: "0.65rem", padding: "0.2rem 0.5rem", fontWeight: 600, fontFamily: "inherit" }}
         >
-          {loading ? "Analyzing…" : "↻ Refresh"}
+          {loading ? "Analysing…" : "↻ Re-analyse"}
         </button>
       </div>
 
-      {/* Content */}
-      {error ? (
-        <div style={{ color: "#ff4d6d", fontSize: "0.78rem", lineHeight: 1.5 }}>
-          {error.includes("OPENAI_API_KEY") ? "Add OPENAI_API_KEY to Railway environment variables." : error}
+      {/* Analysis text */}
+      <div style={{ fontSize: "0.8rem", lineHeight: 1.7, color: "#d4e8e4" }}>
+        {data!.analysis}
+      </div>
+
+      {/* Recommendation card */}
+      <div style={{
+        borderRadius: 8,
+        border: `1px solid ${favorable ? "rgba(0,212,170,0.4)" : "rgba(255,200,87,0.4)"}`,
+        background: favorable ? "rgba(0,212,170,0.07)" : "rgba(255,200,87,0.07)",
+        padding: "0.8rem 0.9rem",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.4rem" }}>
+          <span style={{ fontSize: "0.9rem" }}>{favorable ? "✓" : "⚠"}</span>
+          <span style={{ fontSize: "0.72rem", fontWeight: 700, color: favorable ? "#00d4aa" : "#ffc857", letterSpacing: "0.05em" }}>
+            {favorable ? "CONDITIONS FAVOURABLE" : "CONDITIONS UNFAVOURABLE"}
+          </span>
         </div>
-      ) : loading && !analysis ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          {[90, 75, 60].map((w, i) => (
-            <div key={i} className="skeleton" style={{ height: 12, width: `${w}%`, borderRadius: 4 }} />
-          ))}
+        <div style={{ fontSize: "0.78rem", color: "#d4e8e4", lineHeight: 1.6 }}>
+          {data!.reasoning}
         </div>
-      ) : analysis ? (
-        <div style={{
-          fontSize: "0.8rem",
-          lineHeight: 1.65,
-          color: "#d4e8e4",
-          position: "relative",
-        }}>
-          {analysis}{dots}
-        </div>
-      ) : (
-        <div style={{ color: "#8a9ba8", fontSize: "0.78rem" }}>
-          Start the bot to generate an AI market analysis.
+      </div>
+
+      {/* Activate button */}
+      {favorable && !isRunning && (
+        <button
+          onClick={onStartBot}
+          style={{
+            width: "100%",
+            background: "#00d4aa",
+            border: "none",
+            borderRadius: 8,
+            color: "#0a0a0a",
+            cursor: "pointer",
+            fontSize: "0.85rem",
+            fontWeight: 700,
+            padding: "0.7rem",
+            fontFamily: "inherit",
+            letterSpacing: "0.02em",
+          }}
+        >
+          Activate the Bot →
+        </button>
+      )}
+
+      {/* Bot already running */}
+      {isRunning && (
+        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#00d4aa", boxShadow: "0 0 4px #00d4aa", flexShrink: 0 }} />
+          <span style={{ fontSize: "0.7rem", color: "#8a9ba8" }}>Bot is active — analysis refreshes every 45 seconds</span>
         </div>
       )}
 
-      {/* Footer */}
-      {timestamp && (analysis || loading) && (
-        <div style={{
-          marginTop: "0.75rem",
-          paddingTop: "0.6rem",
-          borderTop: "1px solid #1e3330",
-          display: "flex",
-          justifyContent: "flex-end",
-        }}>
-          <span style={{ fontSize: "0.65rem", color: "#8a9ba8" }}>
-            Updated {timestamp.toLocaleTimeString()}
+      {/* Timestamp */}
+      {data?.timestamp && (
+        <div style={{ textAlign: "right", marginTop: "auto" }}>
+          <span style={{ fontSize: "0.62rem", color: "#8a9ba8" }}>
+            Updated {data.timestamp.toLocaleTimeString()}
           </span>
         </div>
       )}

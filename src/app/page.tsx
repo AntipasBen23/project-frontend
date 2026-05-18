@@ -38,7 +38,7 @@ export default function Dashboard() {
   const [position, setPosition] = useState<Position | null>(null);
   const [livePrice, setLivePrice] = useState<number | null>(null);
   const [connected, setConnected] = useState(false);
-  const [bottomTab, setBottomTab] = useState<"trades" | "orders" | "analysis">("trades");
+  const [bottomTab, setBottomTab] = useState<"trades" | "orders" | "analysis">("analysis");
   const [backtestResult, setBacktestResult] = useState<BacktestResult | null>(null);
   const [backtestProgress, setBacktestProgress] = useState<{ percent: number; message: string } | null>(null);
   const [stopLoss, setStopLoss] = useState(2.0);
@@ -225,12 +225,14 @@ export default function Dashboard() {
                   ) : bottomTab === "orders" ? (
                     <OrderHistory symbol={status?.activePair ?? "BTCUSDT"} />
                   ) : (
-                    <div style={{ padding: "0.75rem", height: "100%", boxSizing: "border-box", overflow: "auto" }}>
-                      <AIAnalysis
-                        symbol={status?.activePair ?? "BTCUSDT"}
-                        isRunning={status?.state === "RUNNING"}
-                      />
-                    </div>
+                    <AIAnalysis
+                      symbol={status?.activePair ?? "BTCUSDT"}
+                      isRunning={status?.state === "RUNNING"}
+                      onStartBot={async () => {
+                        await fetch(`${API}/api/bot/start`, { method: "POST" });
+                        setBottomTab("trades");
+                      }}
+                    />
                   )}
                 </div>
               </div>
