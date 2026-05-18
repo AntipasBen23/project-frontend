@@ -194,18 +194,15 @@ export default function Dashboard() {
               display: "flex",
               borderTop: "1px solid #1e3330",
             }}>
-              <div style={{ flex: "0 0 58%", borderRight: "1px solid #1e3330", position: "relative" }}>
+              <div style={{ flex: "0 0 58%", borderRight: "1px solid #1e3330", display: "flex", flexDirection: "column" }}>
                 <div style={{
                   padding: "0 0.75rem",
                   borderBottom: "1px solid #1e3330",
                   display: "flex",
                   alignItems: "center",
                   gap: "0.25rem",
-                  position: "absolute",
-                  top: 0, left: 0, right: 0,
                   height: 36,
-                  zIndex: 1,
-                  background: "#0a0a0a",
+                  flexShrink: 0,
                 }}>
                   {(["trades", "orders", "analysis", "chat"] as const).map((t) => {
                     const isAnalysis = t === "analysis";
@@ -244,7 +241,7 @@ export default function Dashboard() {
                     );
                   })}
                 </div>
-                <div style={{ position: "absolute", top: 36, left: 0, right: 0, bottom: 0, overflowY: "auto" }}>
+                <div style={{ height: "344px", overflowY: "auto" }}>
                   {bottomTab === "trades" ? (
                     <TradeTable trades={trades} />
                   ) : bottomTab === "orders" ? (
