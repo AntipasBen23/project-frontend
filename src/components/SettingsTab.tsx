@@ -11,6 +11,8 @@ export default function SettingsTab() {
   const [pair, setPair] = useState("BTCUSDT");
   const [strategy, setStrategy] = useState("RSI_MA");
   const [tradeSize, setTradeSize] = useState(0.0002);
+  const [maxPositions, setMaxPositions] = useState(1);
+  const [leverageCap, setLeverageCap] = useState(1.0);
   const [saved, setSaved] = useState(false);
   const [connectivity, setConnectivity] = useState<{ connected: boolean; error?: string } | null>(null);
   const [testing, setTesting] = useState(false);
@@ -19,7 +21,7 @@ export default function SettingsTab() {
     await fetch(`${API}/api/settings`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ apiKey, apiSecret, tradingPair: pair, strategy, tradeSize }),
+      body: JSON.stringify({ apiKey, apiSecret, tradingPair: pair, strategy, tradeSize, maxPositions, leverageCap }),
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -134,6 +136,51 @@ export default function SettingsTab() {
             />
           </div>
 
+          <button
+            className="btn btn-primary"
+            style={{ width: "100%", justifyContent: "center", marginTop: "0.25rem" }}
+            onClick={handleSave}
+          >
+            {saved ? "✓ Saved" : "Save Settings"}
+          </button>
+        </div>
+      </div>
+
+      <div className="card">
+        <div style={{ fontWeight: 700, fontSize: "0.9rem", marginBottom: "1rem", color: "#fff" }}>
+          Risk Guardrails
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+          <div>
+            <div className="label" style={{ marginBottom: "0.3rem" }}>Max Concurrent Positions</div>
+            <input
+              type="number"
+              className="input"
+              value={maxPositions}
+              min={1}
+              max={10}
+              step={1}
+              onChange={(e) => setMaxPositions(Number(e.target.value))}
+            />
+            <div style={{ fontSize: "0.68rem", color: "#8a9ba8", marginTop: "0.25rem" }}>
+              Maximum number of open positions at any one time
+            </div>
+          </div>
+          <div>
+            <div className="label" style={{ marginBottom: "0.3rem" }}>Leverage Cap (×)</div>
+            <input
+              type="number"
+              className="input"
+              value={leverageCap}
+              min={1}
+              max={100}
+              step={1}
+              onChange={(e) => setLeverageCap(Number(e.target.value))}
+            />
+            <div style={{ fontSize: "0.68rem", color: "#8a9ba8", marginTop: "0.25rem" }}>
+              Maximum leverage the bot is permitted to use
+            </div>
+          </div>
           <button
             className="btn btn-primary"
             style={{ width: "100%", justifyContent: "center", marginTop: "0.25rem" }}

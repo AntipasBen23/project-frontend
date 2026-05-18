@@ -22,6 +22,7 @@ import BacktestForm from "@/components/BacktestForm";
 import BacktestResults from "@/components/BacktestResults";
 import SettingsTab from "@/components/SettingsTab";
 import ConnectionBanner from "@/components/ConnectionBanner";
+import MarketBrief from "@/components/MarketBrief";
 import OrderHistory from "@/components/OrderHistory";
 import AIAnalysis from "@/components/AIAnalysis";
 import AIChat from "@/components/AIChat";
@@ -144,6 +145,7 @@ export default function Dashboard() {
       />
 
       <ConnectionBanner connected={connected} />
+      <MarketBrief />
 
       <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         {/* LIVE TRADING TAB */}
