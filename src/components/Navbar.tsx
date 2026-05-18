@@ -190,33 +190,39 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange,
         )}
       </div>
 
-      {/* Controls */}
-      <div style={{ display: "flex", gap: "0.375rem" }}>
-        <button
-          className="btn btn-primary"
-          onClick={handleStart}
-          disabled={state === "RUNNING" || !!loading}
-          style={{ opacity: state === "RUNNING" ? 0.4 : 1, fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}
-        >
-          {loading === "start" ? "..." : "▶ Start"}
-        </button>
-        <button
-          className="btn btn-warn"
-          onClick={handlePause}
-          disabled={state !== "RUNNING" || !!loading}
-          style={{ opacity: state !== "RUNNING" ? 0.4 : 1, fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}
-        >
-          {loading === "pause" ? "..." : "⏸ Pause"}
-        </button>
-        <button
-          className="btn btn-danger"
-          onClick={handleStop}
-          disabled={state === "STOPPED" || !!loading}
-          style={{ opacity: state === "STOPPED" ? 0.4 : 1, fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}
-        >
-          {loading === "stop" ? "..." : "■ Stop"}
-        </button>
-      </div>
+      {/* Controls — only shown when bot is active */}
+      {state !== "STOPPED" && (
+        <div style={{ display: "flex", gap: "0.375rem" }}>
+          {state === "PAUSED" && (
+            <button
+              className="btn btn-primary"
+              onClick={handleStart}
+              disabled={!!loading}
+              style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}
+            >
+              {loading === "start" ? "..." : "▶ Resume"}
+            </button>
+          )}
+          {state === "RUNNING" && (
+            <button
+              className="btn btn-warn"
+              onClick={handlePause}
+              disabled={!!loading}
+              style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}
+            >
+              {loading === "pause" ? "..." : "⏸ Pause"}
+            </button>
+          )}
+          <button
+            className="btn btn-danger"
+            onClick={handleStop}
+            disabled={!!loading}
+            style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}
+          >
+            {loading === "stop" ? "..." : "■ Stop"}
+          </button>
+        </div>
+      )}
 
       {/* Pair selector */}
       <select
@@ -250,6 +256,7 @@ export default function Navbar({ status, activeTab, onTabChange, onStatusChange,
         <option value="RSI_MA">RSI + MA Crossover</option>
         <option value="BOLLINGER">Bollinger Bands</option>
         <option value="EMA">EMA Scalper</option>
+        <option value="BOLLINGER_RSI">Bollinger + RSI</option>
       </select>
 
       {/* Spacer */}

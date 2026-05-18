@@ -64,21 +64,34 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "1rem",
-        padding: "2.5rem 1.5rem",
+        gap: "1.1rem",
+        padding: "1.5rem",
         textAlign: "center",
         height: "100%",
         boxSizing: "border-box",
       }}>
-        <div style={{ fontSize: "2.2rem" }}>🤖</div>
+        <div style={{ fontSize: "2rem" }}>🤖</div>
         <div>
-          <div style={{ color: "#d4e8e4", fontWeight: 700, fontSize: "0.95rem", marginBottom: "0.5rem" }}>
-            AI Market Analysis
+          <div style={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.35rem" }}>
+            Start with AI Analysis
           </div>
-          <div style={{ color: "#8a9ba8", fontSize: "0.78rem", lineHeight: 1.65, maxWidth: 320 }}>
-            Get a real-time AI assessment of current market conditions before activating the bot.
+          <div style={{ color: "#8a9ba8", fontSize: "0.75rem", lineHeight: 1.6, maxWidth: 280 }}>
+            Let AI assess current market conditions before activating the bot.
           </div>
         </div>
+
+        {/* Step flow */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.68rem", color: "#8a9ba8" }}>
+          <span style={{ background: "#00d4aa", color: "#0a0a0a", borderRadius: 4, padding: "0.15rem 0.45rem", fontWeight: 700 }}>1</span>
+          <span>Analyse</span>
+          <span style={{ color: "#1e3330" }}>──</span>
+          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.15rem 0.45rem", fontWeight: 700, color: "#8a9ba8" }}>2</span>
+          <span>Review signal</span>
+          <span style={{ color: "#1e3330" }}>──</span>
+          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.15rem 0.45rem", fontWeight: 700, color: "#8a9ba8" }}>3</span>
+          <span>Activate bot</span>
+        </div>
+
         <button
           onClick={fetchAnalysis}
           style={{
@@ -94,7 +107,7 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
             letterSpacing: "0.02em",
           }}
         >
-          Analyse Market
+          Analyse Market →
         </button>
       </div>
     );

@@ -122,6 +122,7 @@ export default function SettingsTab() {
               <option value="RSI_MA">RSI + MA Crossover</option>
               <option value="BOLLINGER">Bollinger Bands</option>
               <option value="EMA">EMA Scalper</option>
+              <option value="BOLLINGER_RSI">Bollinger + RSI (Double Confirm)</option>
             </select>
           </div>
           <div>

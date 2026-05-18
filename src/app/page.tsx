@@ -26,6 +26,7 @@ import MarketBrief from "@/components/MarketBrief";
 import OrderHistory from "@/components/OrderHistory";
 import AIAnalysis from "@/components/AIAnalysis";
 import AIChat from "@/components/AIChat";
+import StrategyInsights from "@/components/StrategyInsights";
 import { API_URL, WS_URL } from "@/lib/api";
 
 const API = API_URL;
@@ -203,24 +204,42 @@ export default function Dashboard() {
                   flexShrink: 0,
                   height: 36,
                 }}>
-                  {(["trades", "orders", "analysis", "chat"] as const).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setBottomTab(t)}
-                      style={{
-                        background: bottomTab === t ? "#1e3330" : "transparent",
-                        color: bottomTab === t ? "#00d4aa" : "#8a9ba8",
-                        border: "none",
-                        borderRadius: 4,
-                        padding: "0.2rem 0.6rem",
-                        fontSize: "0.7rem",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {t === "trades" ? `Bot Trades${trades.length > 0 ? ` (${trades.length})` : ""}` : t === "orders" ? "Exchange Orders" : t === "analysis" ? "AI Analysis" : "AI Chat"}
-                    </button>
-                  ))}
+                  {(["trades", "orders", "analysis", "chat"] as const).map((t) => {
+                    const isAnalysis = t === "analysis";
+                    const showPulse = isAnalysis && status?.state !== "RUNNING";
+                    return (
+                      <button
+                        key={t}
+                        onClick={() => setBottomTab(t)}
+                        style={{
+                          background: bottomTab === t ? "#1e3330" : "transparent",
+                          color: bottomTab === t ? "#00d4aa" : "#8a9ba8",
+                          border: "none",
+                          borderRadius: 4,
+                          padding: "0.2rem 0.6rem",
+                          fontSize: "0.7rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          position: "relative",
+                        }}
+                      >
+                        {showPulse && (
+                          <span
+                            className="pulse-dot"
+                            style={{ width: 5, height: 5, background: "#00d4aa", flexShrink: 0 }}
+                          />
+                        )}
+                        {t === "trades"
+                          ? `Bot Trades${trades.length > 0 ? ` (${trades.length})` : ""}`
+                          : t === "orders" ? "Exchange Orders"
+                          : t === "analysis" ? "AI Analysis"
+                          : "Ask AI"}
+                      </button>
+                    );
+                  })}
                 </div>
                 <div style={{ flex: 1, overflow: "hidden" }}>
                   {bottomTab === "trades" ? (
@@ -243,6 +262,7 @@ export default function Dashboard() {
               </div>
               <div style={{ flex: "0 0 42%", display: "flex", flexDirection: "column" }}>
                 <SectionHeader label="🤖 Bot Brain" badge={brainLogs.length} />
+                <StrategyInsights tradeCount={trades.filter(t => t.status === "CLOSED").length} />
                 <div style={{ flex: 1, overflow: "hidden" }}>
                   <BotBrainLog logs={brainLogs} />
                 </div>

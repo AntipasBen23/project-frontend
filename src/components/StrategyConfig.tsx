@@ -47,6 +47,17 @@ export default function StrategyConfig({ activeStrategy }: StrategyConfigProps) 
         </div>
       )}
 
+      {activeStrategy === "BOLLINGER_RSI" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+          <div style={{ fontSize: "0.68rem", color: "#8a9ba8", lineHeight: 1.5, marginBottom: "0.25rem" }}>
+            Buys only when price is at the lower band <em>and</em> RSI confirms oversold — double confirmation.
+          </div>
+          <ConfigInput label="BB Period" value={bbPeriod} onChange={setBbPeriod} />
+          <ConfigInput label="BB Std Dev" value={bbStd} onChange={setBbStd} step={0.1} />
+          <ConfigInput label="RSI Period" value={rsiPeriod} onChange={setRsiPeriod} />
+        </div>
+      )}
+
       <button
         className="btn btn-ghost"
         style={{ width: "100%", marginTop: "0.75rem", justifyContent: "center" }}
