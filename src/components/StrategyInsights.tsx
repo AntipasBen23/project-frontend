@@ -65,7 +65,7 @@ export default function StrategyInsights({ tradeCount }: Props) {
                 Analysing…
               </>
             ) : (
-              <>🧠 Analyse My Trades</>
+              <>🧠 Strategy Coach</>
             )}
           </button>
           {!canAnalyse && (
@@ -92,7 +92,7 @@ export default function StrategyInsights({ tradeCount }: Props) {
             marginBottom: "0.4rem",
           }}>
             <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#00d4aa" }}>
-              🧠 Strategy Insights
+              🧠 Strategy Coach
             </span>
             <span style={{
               fontSize: "0.62rem",
