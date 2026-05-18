@@ -144,7 +144,7 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
 
   // Result state
   return (
-    <div style={{ padding: "0.85rem", display: "flex", flexDirection: "column", gap: "0.85rem", height: "100%", boxSizing: "border-box", overflow: "auto" }}>
+    <div style={{ padding: "0.85rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}>
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -216,7 +216,7 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
 
       {/* Timestamp */}
       {data?.timestamp && (
-        <div style={{ textAlign: "right", marginTop: "auto" }}>
+        <div style={{ textAlign: "right" }}>
           <span style={{ fontSize: "0.62rem", color: "#8a9ba8" }}>
             Updated {data.timestamp.toLocaleTimeString()}
           </span>
