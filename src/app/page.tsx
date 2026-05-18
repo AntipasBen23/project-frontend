@@ -241,7 +241,7 @@ export default function Dashboard() {
                     );
                   })}
                 </div>
-                <div style={{ flex: 1, overflow: "auto" }}>
+                <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
                   {bottomTab === "trades" ? (
                     <TradeTable trades={trades} />
                   ) : bottomTab === "orders" ? (
