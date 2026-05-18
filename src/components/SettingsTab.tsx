@@ -43,7 +43,7 @@ export default function SettingsTab() {
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
       <div className="card" style={{ marginBottom: "1rem" }}>
         <div style={{ fontWeight: 700, fontSize: "0.9rem", marginBottom: "1rem", color: "#fff" }}>
-          Binance Testnet API
+          Binance API
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
@@ -52,7 +52,7 @@ export default function SettingsTab() {
             <input
               type="text"
               className="input"
-              placeholder="Your Binance Testnet API Key"
+              placeholder="Your Binance API Key"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
             />
@@ -62,7 +62,7 @@ export default function SettingsTab() {
             <input
               type="password"
               className="input"
-              placeholder="Your Binance Testnet API Secret"
+              placeholder="Your Binance API Secret"
               value={apiSecret}
               onChange={(e) => setApiSecret(e.target.value)}
             />
@@ -89,7 +89,7 @@ export default function SettingsTab() {
               fontSize: "0.8rem",
             }}>
               {connectivity.connected
-                ? "✓ Successfully connected to Binance Testnet"
+                ? "✓ Successfully connected to Binance"
                 : `✗ Connection failed: ${connectivity.error}`}
             </div>
           )}
