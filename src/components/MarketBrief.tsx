@@ -47,8 +47,6 @@ export default function MarketBrief() {
       gap: "0.65rem",
       flexShrink: 0,
     }}>
-      <span style={{ fontSize: "0.75rem", flexShrink: 0, marginTop: 1 }}>📊</span>
-
       {loading ? (
         <div style={{ flex: 1, display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <div className="skeleton" style={{ height: 10, width: "60%", borderRadius: 4 }} />
