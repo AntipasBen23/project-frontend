@@ -24,6 +24,7 @@ import SettingsTab from "@/components/SettingsTab";
 import ConnectionBanner from "@/components/ConnectionBanner";
 import OrderHistory from "@/components/OrderHistory";
 import AIAnalysis from "@/components/AIAnalysis";
+import AIChat from "@/components/AIChat";
 import { API_URL, WS_URL } from "@/lib/api";
 
 const API = API_URL;
@@ -38,7 +39,7 @@ export default function Dashboard() {
   const [position, setPosition] = useState<Position | null>(null);
   const [livePrice, setLivePrice] = useState<number | null>(null);
   const [connected, setConnected] = useState(false);
-  const [bottomTab, setBottomTab] = useState<"trades" | "orders" | "analysis">("analysis");
+  const [bottomTab, setBottomTab] = useState<"trades" | "orders" | "analysis" | "chat">("analysis");
   const [backtestResult, setBacktestResult] = useState<BacktestResult | null>(null);
   const [backtestProgress, setBacktestProgress] = useState<{ percent: number; message: string } | null>(null);
   const [stopLoss, setStopLoss] = useState(2.0);
@@ -200,7 +201,7 @@ export default function Dashboard() {
                   flexShrink: 0,
                   height: 36,
                 }}>
-                  {(["trades", "orders", "analysis"] as const).map((t) => (
+                  {(["trades", "orders", "analysis", "chat"] as const).map((t) => (
                     <button
                       key={t}
                       onClick={() => setBottomTab(t)}
@@ -215,7 +216,7 @@ export default function Dashboard() {
                         cursor: "pointer",
                       }}
                     >
-                      {t === "trades" ? `Bot Trades${trades.length > 0 ? ` (${trades.length})` : ""}` : t === "orders" ? "Exchange Orders" : "AI Analysis"}
+                      {t === "trades" ? `Bot Trades${trades.length > 0 ? ` (${trades.length})` : ""}` : t === "orders" ? "Exchange Orders" : t === "analysis" ? "AI Analysis" : "AI Chat"}
                     </button>
                   ))}
                 </div>
@@ -224,6 +225,8 @@ export default function Dashboard() {
                     <TradeTable trades={trades} />
                   ) : bottomTab === "orders" ? (
                     <OrderHistory symbol={status?.activePair ?? "BTCUSDT"} />
+                  ) : bottomTab === "chat" ? (
+                    <AIChat />
                   ) : (
                     <AIAnalysis
                       symbol={status?.activePair ?? "BTCUSDT"}
