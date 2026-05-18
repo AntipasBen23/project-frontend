@@ -63,18 +63,27 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
         gap: "0.6rem",
-        padding: "0.75rem 1.5rem",
+        padding: "1.25rem 1.5rem",
         textAlign: "center",
-        height: "100%",
-        boxSizing: "border-box",
       }}>
         <div style={{ color: "#fff", fontWeight: 700, fontSize: "0.88rem" }}>
           Start with AI Analysis
         </div>
         <div style={{ color: "#8a9ba8", fontSize: "0.72rem", lineHeight: 1.5, maxWidth: 280 }}>
           Let AI assess market conditions before activating the bot.
+        </div>
+
+        {/* Step flow */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.65rem", color: "#8a9ba8" }}>
+          <span style={{ background: "#00d4aa", color: "#0a0a0a", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>1</span>
+          <span>Analyse</span>
+          <span style={{ color: "#2a3f3c" }}>──</span>
+          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>2</span>
+          <span>Review signal</span>
+          <span style={{ color: "#2a3f3c" }}>──</span>
+          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>3</span>
+          <span>Activate bot</span>
         </div>
 
         <button
@@ -90,22 +99,11 @@ export default function AIAnalysis({ symbol, isRunning, onStartBot }: AIAnalysis
             padding: "0.55rem 1.5rem",
             fontFamily: "inherit",
             letterSpacing: "0.02em",
+            marginTop: "0.25rem",
           }}
         >
           Analyse Market →
         </button>
-
-        {/* Step flow */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.65rem", color: "#8a9ba8" }}>
-          <span style={{ background: "#00d4aa", color: "#0a0a0a", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>1</span>
-          <span>Analyse</span>
-          <span style={{ color: "#2a3f3c" }}>──</span>
-          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>2</span>
-          <span>Review signal</span>
-          <span style={{ color: "#2a3f3c" }}>──</span>
-          <span style={{ background: "#1e3330", borderRadius: 4, padding: "0.1rem 0.4rem", fontWeight: 700 }}>3</span>
-          <span>Activate bot</span>
-        </div>
       </div>
     );
   }
